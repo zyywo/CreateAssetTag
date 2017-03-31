@@ -116,7 +116,9 @@ class AssetTags():
         if header is None:
             header=self.__header
 
-        for i in range(len(self.__datas)):
+        for i,d in enumerate(self.__datas):
+            #因为是字典，所以d的值为与i的值一样
+
             self.__set_figure(header)
             self.__set_text(header, self.__datas[i])
             self.__c.showPage()
