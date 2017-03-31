@@ -4,13 +4,13 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.units import mm
 from reportlab.platypus import Image
-pdfmetrics.registerFont(TTFont('Vera', 'wqy-zenhei.ttc'))
 from openpyxl import load_workbook
 import datetime
+pdfmetrics.registerFont(TTFont('Vera', 'wqy-zenhei.ttc'))
 
 
 class AssetTags():
-    def __init__(self, excel_file,title_at_row, out_pdf_file, image_):
+    def __init__(self, excel_file, index_of_header, out_pdf_file, image_=None):
         self.__button0y = 0.3 * mm
         self.__button1y = 5 * mm
         self.__button2y = 10 * mm
@@ -25,28 +25,31 @@ class AssetTags():
         self.__left4x = 104 * mm
 
         self.__image = image_
-        self.__title,self.__datas = self.__loadfile(excel_file,title_at_row)
+        self.__header, self.__datas = self.__loadfile(excel_file, index_of_header)
         self.__c = canvas.Canvas(out_pdf_file, pagesize=A7)
 
     @staticmethod
-    def __loadfile(excel_,title_at_row):
+    def __loadfile(excel_, header_at_row):
+        """参数：excel文件；表头所在的行
+           返回值：表头内容（列表）；excel内容（字典）
+        """
         wb = load_workbook(excel_, read_only=True)
         st = wb.active
-        title = []
+        header = []
         data={}
 
         for i in range(1, st.max_column + 1):
-            title.append(st.cell(row=title_at_row, column=i).value)
+            header.append(st.cell(row=header_at_row, column=i).value)
 
         for i, row in zip(range(0, st.max_row), st.rows):
             temp_dict = {}
-            for j, cell in zip(range(0, len(title)), row):
+            for j, cell in zip(range(0, len(header)), row):
                 if isinstance(cell.value,datetime.datetime):
-                    temp_dict[title[j]] = str(cell.value)[:-8]
+                    temp_dict[header[j]] = str(cell.value)[:-8]
                 else:
-                    temp_dict[title[j]] = str( cell.value )
+                    temp_dict[header[j]] = str(cell.value)
             data[i] = temp_dict
-        return title,data
+        return header, data
 
     def __set_figure(self, const_text):
         """此函数用来绘制框架"""
@@ -58,8 +61,9 @@ class AssetTags():
         self.__c.rect(0.1 * mm, 0.1 * mm, 104 * mm, 74 * mm, fill=0)
 
         # 加载图片
-        a = Image(self.__image, width=38 * mm, height=48 * mm)
-        a.drawOn(self.__c, self.__left3x, self.__button4y + .5 * mm)
+        if self.__image is not None:
+            a = Image(self.__image, width=38 * mm, height=48 * mm)
+            a.drawOn(self.__c, self.__left3x, self.__button4y + .5 * mm)
 
         # 绘制三个黄色方框
         self.__c.setFillColorRGB(150, 150, 0)
@@ -96,25 +100,25 @@ class AssetTags():
         self.__c.drawCentredString(textleftx, mm, const_text[6])        # 左4
         self.__c.drawCentredString(textleft2x, mm, const_text[7])       # 右4
 
-    def __set_text(self, t, s_):
+    def __set_text(self, header_, s_):
         s =s_
         self.__c.setFont('Vera', 8)
-        self.__c.drawString(self.__left1x + mm, self.__button3y + mm, s[t[0]])
-        self.__c.drawString(self.__left3x + mm, self.__button3y + mm, s[t[1]])
-        self.__c.drawString(self.__left1x + mm, self.__button2y + mm, s[t[2]])
-        self.__c.drawString(self.__left3x + mm, self.__button2y + mm, s[t[3]])
-        self.__c.drawString(self.__left1x + mm, self.__button1y + mm, s[t[4]])
-        self.__c.drawString(self.__left3x + mm, self.__button1y + mm, s[t[5]])
-        self.__c.drawString(self.__left1x + mm, self.__button0y + mm, s[t[6]])
-        self.__c.drawString(self.__left3x + mm, self.__button0y + mm, s[t[7]])
+        self.__c.drawString(self.__left1x + mm, self.__button3y + mm, s[header_[0]])
+        self.__c.drawString(self.__left3x + mm, self.__button3y + mm, s[header_[1]])
+        self.__c.drawString(self.__left1x + mm, self.__button2y + mm, s[header_[2]])
+        self.__c.drawString(self.__left3x + mm, self.__button2y + mm, s[header_[3]])
+        self.__c.drawString(self.__left1x + mm, self.__button1y + mm, s[header_[4]])
+        self.__c.drawString(self.__left3x + mm, self.__button1y + mm, s[header_[5]])
+        self.__c.drawString(self.__left1x + mm, self.__button0y + mm, s[header_[6]])
+        self.__c.drawString(self.__left3x + mm, self.__button0y + mm, s[header_[7]])
 
-    def create_page(self,title=None):
-        if title is None:
-            title=self.__title
+    def create_page(self, header=None):
+        if header is None:
+            header=self.__header
 
         for i in range(len(self.__datas)):
-            self.__set_figure(title)
-            self.__set_text(title,self.__datas[i])
+            self.__set_figure(header)
+            self.__set_text(header, self.__datas[i])
             self.__c.showPage()
 
     def save(self):
