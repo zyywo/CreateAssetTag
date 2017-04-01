@@ -55,6 +55,55 @@ class AssetTags():
 
     def __set_figure(self, const_text):
         """此函数用来绘制框架"""
+        pagesize = A7
+        const_text = [str(i) for i in const_text]
+        self.__c.setFont('Vera', 12)
+
+        # 绘制边界大方框
+        self.__c.rect(0.1 * mm, 0.2 * mm, pagesize[0]-(0.5*mm), pagesize[1]-(0.5*mm), fill=0)
+
+        # 加载图片
+        if self.__image is not None:
+            a = Image(self.__image, width=38 * mm, height=48 * mm)
+            a.drawOn(self.__c, self.__left3x, self.__button4y + .5 * mm)
+
+        # 绘制三个黄色方框
+        # self.__c.setFillColorRGB(150, 150, 0)
+        # self.__c.setStrokeColorRGB(150, 150, 0)
+        # self.__c.rect(self.__left0x, self.__button0y + 0.1 * mm, 12.5 * mm, 20 * mm, stroke=0, fill=1)
+        # self.__c.rect(self.__left2x, self.__button0y, 12.5 * mm, 20 * mm, stroke=0, fill=1)
+        # self.__c.rect(self.__left0x, self.__button5y, 103.6 * mm, 5 * mm, stroke=0, fill=1)
+
+        # 绘制中间三条竖线
+        self.__c.setFillColorRGB(0, 0, 0)
+        self.__c.setStrokeColorRGB(0, 0, 0)
+        self.__c.line(self.__left1x, self.__button0y, self.__left1x, self.__button4y)
+        self.__c.line(self.__left2x, self.__button0y, self.__left2x, self.__button4y)
+        self.__c.line(self.__left3x, self.__button0y, self.__left3x, self.__button5y)
+
+        # 绘制中间五条横线
+        self.__c.line(self.__left0x, self.__button1y, self.__left4x, self.__button1y)
+        self.__c.line(self.__left0x, self.__button2y, self.__left4x, self.__button2y)
+        self.__c.line(self.__left0x, self.__button3y, self.__left4x, self.__button3y)
+        self.__c.line(self.__left0x, self.__button4y, self.__left4x, self.__button4y)
+        self.__c.line(self.__left0x, self.__button5y, self.__left4x, self.__button5y)
+
+        self.__c.drawCentredString(50 * mm, self.__button5y + mm, 'IT设备标识牌')
+        self.__c.setFont('Vera', 8)
+        textleftx = 6 * mm
+        textleft2x = 59 * mm
+
+        self.__c.drawCentredString(textleftx, 16 * mm, const_text[0])   # 左1
+        self.__c.drawCentredString(textleft2x, 16 * mm, const_text[1])  # 右1
+        self.__c.drawCentredString(textleftx, 11 * mm, const_text[2])   # 左2
+        self.__c.drawCentredString(textleft2x, 11 * mm, const_text[3])  # 右2
+        self.__c.drawCentredString(textleftx, 6 * mm, const_text[4])    # 左3
+        self.__c.drawCentredString(textleft2x, 6 * mm, const_text[5])   # 右3
+        self.__c.drawCentredString(textleftx, mm, const_text[6])        # 左4
+        self.__c.drawCentredString(textleft2x, mm, const_text[7])       # 右4
+
+    def __set_figure_little(self, const_text):
+        """此函数用来绘制框架"""
 
         const_text = [str(i) for i in const_text]
         self.__c.setFont('Vera', 12)
@@ -132,8 +181,8 @@ if __name__ == '__main__':
 
     my_custom = ['资产名称','购置日期','资产品牌','规格型号','序列号','资产编码','所属部门','所在区域']
 
-    pdf = AssetTags('东莞仓固定资产02-最终.xlsx', 2, 'pdf.pdf', '1.png')
+    pdf = AssetTags('0.xlsx', 2, 'pdf.pdf', '1.png')
 
-    pdf.create_page(my_custom)
+    pdf.create_page()
 
     pdf.save()
