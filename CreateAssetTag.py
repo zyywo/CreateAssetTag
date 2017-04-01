@@ -30,7 +30,7 @@ class AssetTags():
 
     @staticmethod
     def __loadfile(excel_, header_at_row):
-        """参数：excel文件；表头所在的行
+        """参数：excel文件；表头所在的行数
            返回值：表头内容（列表）；excel内容（字典）
         """
         wb = load_workbook(excel_, read_only=True)
@@ -41,13 +41,15 @@ class AssetTags():
         for i in range(1, st.max_column + 1):
             header.append(st.cell(row=header_at_row, column=i).value)
 
-        for i, row in zip(range(0, st.max_row), st.rows):
+        for i, row in enumerate(st.rows):
             temp_dict = {}
-            for j, cell in zip(range(0, len(header)), row):
+            for j,cell in enumerate(row):
                 if isinstance(cell.value,datetime.datetime):
                     temp_dict[header[j]] = str(cell.value)[:-8]
+                elif cell.value is None:
+                    temp_dict[header[j]] = ''
                 else:
-                    temp_dict[header[j]] = str(cell.value)
+                    temp_dict[header[j]] = cell.value
             data[i] = temp_dict
         return header, data
 
@@ -103,14 +105,14 @@ class AssetTags():
     def __set_text(self, header_, s_):
         s =s_
         self.__c.setFont('Vera', 8)
-        self.__c.drawString(self.__left1x + mm, self.__button3y + mm, s[header_[0]])
-        self.__c.drawString(self.__left3x + mm, self.__button3y + mm, s[header_[1]])
-        self.__c.drawString(self.__left1x + mm, self.__button2y + mm, s[header_[2]])
-        self.__c.drawString(self.__left3x + mm, self.__button2y + mm, s[header_[3]])
-        self.__c.drawString(self.__left1x + mm, self.__button1y + mm, s[header_[4]])
-        self.__c.drawString(self.__left3x + mm, self.__button1y + mm, s[header_[5]])
-        self.__c.drawString(self.__left1x + mm, self.__button0y + mm, s[header_[6]])
-        self.__c.drawString(self.__left3x + mm, self.__button0y + mm, s[header_[7]])
+        self.__c.drawString(self.__left1x + mm, self.__button3y + mm, str(s[header_[0]]))
+        self.__c.drawString(self.__left3x + mm, self.__button3y + mm, str(s[header_[1]]))
+        self.__c.drawString(self.__left1x + mm, self.__button2y + mm, str(s[header_[2]]))
+        self.__c.drawString(self.__left3x + mm, self.__button2y + mm, str(s[header_[3]]))
+        self.__c.drawString(self.__left1x + mm, self.__button1y + mm, str(s[header_[4]]))
+        self.__c.drawString(self.__left3x + mm, self.__button1y + mm, str(s[header_[5]]))
+        self.__c.drawString(self.__left1x + mm, self.__button0y + mm, str(s[header_[6]]))
+        self.__c.drawString(self.__left3x + mm, self.__button0y + mm, str(s[header_[7]]))
 
     def create_page(self, header=None):
         if header is None:
@@ -128,9 +130,9 @@ class AssetTags():
 
 if __name__ == '__main__':
 
-    my_custom = ['资产名称','购置日期','资产编码','所在区域','资产状态','保管人员','供应商','单价']
+    my_custom = ['资产名称','购置日期','资产品牌','规格型号','序列号','资产编码','所属部门','所在区域']
 
-    pdf = AssetTags('0.xlsx', 2, 'pdf.pdf', '1.png')
+    pdf = AssetTags('东莞仓固定资产02-最终.xlsx', 2, 'pdf.pdf', '1.png')
 
     pdf.create_page(my_custom)
 
