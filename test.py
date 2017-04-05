@@ -55,29 +55,20 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 pdfmetrics.registerFont(TTFont('msyh', 'msyh.ttf'))
 
-# creation of the BaseDocTempalte. showBoundary=0 to hide the debug borders
-doc = BaseDocTemplate('out.pdf',showBoundary=0,pagesize=(A7[0]+144,A7[1]+144),leftmargin=0,rightmargin=0,topmargin=0,bottommargin=0)
+doc = BaseDocTemplate('out.pdf',showBoundary=0,pagesize=A7,leftMargin=0,rightMargin=0,topMargin=0,bottomMargin=0)
+frame_pages = Frame(0, 0, doc.width, doc.height, id='remaining', leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0)
+doc.addPageTemplates([PageTemplate(id='table', frames=frame_pages)])
 
-# create the frames. Here you can adjust the margins
-frame_remaining_pages = Frame(0, 0, doc.width, doc.height, id='remaining',leftPadding=0,bottomPadding=0,rightPadding=0,topPadding=0)
-# add the PageTempaltes to the BaseDocTemplate. You can also modify those to adjust the margin if you need more control over the Frames.
-doc.addPageTemplates(
-    [PageTemplate(id='table',frames=frame_remaining_pages,pagesize=A7)]
-)
-
-# styles=getSampleStyleSheet()
-# start the story...
 Elements=[]
 
 data = [['IT设备标识牌','','','','',''],
         ['','','','','',''],
-        ['设备型号','','','设备状态','',''],
-        ['设备用途','','','使用年限','',''],
-        ['责任人','','','联系电话','','']
+        ['设备型号','1111','','设备状态','2222',''],
+        ['设备用途','3333','','使用年限','4444',''],
+        ['责任人','5555','','联系电话','6666','']
 ]
 colwidth = [doc.width/6]*6
 rowheight = [5*mm,30*mm]+[(doc.height-35*mm)/3]*3
-print(colwidth)
 t = Table(data,colWidths=colwidth,rowHeights=rowheight)
 t.setStyle(TableStyle([('GRID',(0,0),(-1,-1),0.5,'BLACK'),
                        ('FONTNAME', (0, 0), (-1, -1), 'msyh'),
