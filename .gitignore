@@ -46,8 +46,7 @@ fabric.properties
 /0.xlsx
 /1.png
 /IT标签.xlsx
-/pdf.pdf
+*.pdf
 /东莞仓固定资产02-最终.xlsx
-/test.py
-!/test.py
 out.pdf
+*.xlsx
